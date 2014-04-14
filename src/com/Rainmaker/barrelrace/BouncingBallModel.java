@@ -62,14 +62,18 @@ public class BouncingBallModel {
 	private long timeInMilliseconds = 0L;
 	private long updatedTime = 0L;
 
+	public int flagBarrelLeft[] = new int[4];
+	public int flagBarrelRight[] = new int[4];
+	public int flagBarrelMiddle[] = new int[4];
+	public int roundStateChanged[] = new int[3];
+	public static boolean alternateAxis = false;
+
 	/**
 	 * @return the timeString
 	 */
 	public String getTimeString() {
 		return timeString;
 	}
-
-	
 
 	public BouncingBallModel(int ballRadius) {
 		this.ballRadius = ballRadius;
@@ -126,11 +130,175 @@ public class BouncingBallModel {
 		if (sumOfRadius >= distFromLeftBarrel
 				|| sumOfRadius >= distFromMiddleBarrel
 				|| sumOfRadius >= distFromRightBarrel) {
-			moveBall((int) ballPixelX, (int) ballPixelY);
+
+			moveBall((int) ballPixelX + 1, (int) ballPixelY + 1); // stop the
+																	// ball
+			Vibrator v = vibratorRef.get();
+			if (v != null) {
+				v.vibrate(35L);
+			}
 			return true;
 		} else
 			return false;
 
+	}
+
+	public int[] isCompletedCircle() {
+		float ballX, ballY;
+		float barrelLeftX, barrelLeftY;
+		float barrelRightX, barrelRightY;
+		float barrelMiddleX, barrelMiddleY;
+
+		synchronized (LOCK) {
+			ballX = (int) ballPixelX;
+			ballY = (int) ballPixelY;
+			barrelLeftX = (int) BouncingBallActivity.barrelLeftX;
+			barrelLeftY = (int) BouncingBallActivity.barrelLeftY;
+			barrelMiddleX = (int) BouncingBallActivity.barrelMiddleX;
+			barrelMiddleY = (int) BouncingBallActivity.barrelMiddleY;
+			barrelRightX = (int) BouncingBallActivity.barrelRightX;
+			barrelRightY = (int) BouncingBallActivity.barrelRightY;
+		}
+
+		// Logic for left ball to be circled
+
+		if (ballX > (barrelLeftX - 100) && ballX <= barrelLeftX) {
+
+			if (!alternateAxis) {
+				flagBarrelLeft[0] = 1;
+				alternateAxis = true;
+			}
+
+		}
+		if (ballX < (barrelLeftX + 100) && ballX > barrelLeftX) {
+
+			if (!alternateAxis) {
+				flagBarrelLeft[1] = 1;
+				alternateAxis = true;
+			}
+
+		}
+
+		if (ballY > (barrelLeftY - 100) && ballY <= barrelLeftY) {
+
+			if (alternateAxis) {
+				flagBarrelLeft[2] = 1;
+				alternateAxis = false;
+			}
+
+		}
+
+		if (ballY < (barrelLeftY + 100) && ballY > barrelLeftY) {
+
+			if (alternateAxis) {
+				flagBarrelLeft[3] = 1;
+				alternateAxis = false;
+			}
+
+		}
+
+		Log.d("tag", "msg " + ballX + " " + ballY + " " + barrelLeftX + " "
+				+ barrelLeftY + " " + flagBarrelLeft[0] + " "
+				+ flagBarrelLeft[1] + " " + flagBarrelLeft[2] + " "
+				+ flagBarrelLeft[3]);
+
+		if (flagBarrelLeft[0] + flagBarrelLeft[1] + flagBarrelLeft[2]
+				+ flagBarrelLeft[3] == 4) {
+			roundStateChanged[0] = 1;
+		}
+
+		// For Right ball to be circled logic
+
+		if (ballX > (barrelRightX - 100) && ballX <= barrelRightX) {
+
+			if (!alternateAxis) {
+				flagBarrelRight[0] = 1;
+				alternateAxis = true;
+			}
+
+		}
+		if (ballX < (barrelRightX + 100) && ballX > barrelRightX) {
+
+			if (!alternateAxis) {
+				flagBarrelRight[1] = 1;
+				alternateAxis = true;
+			}
+
+		}
+
+		if (ballY > (barrelRightY - 100) && ballY <= barrelRightY) {
+
+			if (alternateAxis) {
+				flagBarrelRight[2] = 1;
+				alternateAxis = false;
+			}
+
+		}
+
+		if (ballY < (barrelRightY + 100) && ballY > barrelRightY) {
+
+			if (alternateAxis) {
+				flagBarrelRight[3] = 1;
+				alternateAxis = false;
+			}
+
+		}
+
+		Log.d("tag", "msg " + ballX + " " + ballY + " " + barrelRightX + " "
+				+ barrelRightY + " " + flagBarrelRight[0] + " "
+				+ flagBarrelRight[1] + " " + flagBarrelRight[2] + " "
+				+ flagBarrelRight[3]);
+
+		if (flagBarrelRight[0] + flagBarrelRight[1] + flagBarrelRight[2]
+				+ flagBarrelRight[3] == 4) {
+			roundStateChanged[1] = 1;
+		}
+
+		// Logic for Middle ball to be Circle
+
+		if (ballX > (barrelMiddleX - 100) && ballX <= barrelMiddleX) {
+
+			if (!alternateAxis) {
+				flagBarrelMiddle[0] = 1;
+				alternateAxis = true;
+			}
+
+		}
+		if (ballX < (barrelMiddleX + 100) && ballX > barrelMiddleX) {
+
+			if (!alternateAxis) {
+				flagBarrelMiddle[1] = 1;
+				alternateAxis = true;
+			}
+
+		}
+
+		if (ballY > (barrelMiddleY - 100) && ballY <= barrelMiddleY) {
+
+			if (alternateAxis) {
+				flagBarrelMiddle[2] = 1;
+				alternateAxis = false;
+			}
+
+		}
+
+		if (ballY < (barrelMiddleY + 100) && ballY > barrelMiddleY) {
+
+			if (alternateAxis) {
+				flagBarrelMiddle[3] = 1;
+				alternateAxis = false;
+			}
+		}
+		Log.d("tag", "msg " + ballX + " " + ballY + " " + barrelMiddleX + " "
+				+ barrelMiddleY + " " + flagBarrelMiddle[0] + " "
+				+ flagBarrelMiddle[1] + " " + flagBarrelMiddle[2] + " "
+				+ flagBarrelMiddle[3]);
+
+		if (flagBarrelMiddle[0] + flagBarrelMiddle[1] + flagBarrelMiddle[2]
+				+ flagBarrelMiddle[3] == 4) {
+			roundStateChanged[2] = 1;
+		}
+		return roundStateChanged;
 	}
 
 	public void updatePhysics() {
@@ -216,7 +384,7 @@ public class BouncingBallModel {
 
 		if (bouncedX || bouncedY) {
 			Vibrator v = vibratorRef.get();
-			startTime-=5000; // 5 seconds penalty 
+			startTime -= 5000; // 5 seconds penalty
 			if (v != null) {
 				v.vibrate(20L);
 			}
@@ -229,7 +397,7 @@ public class BouncingBallModel {
 		int mins = secs / 60;
 		secs = secs % 60;
 		int milliseconds = (int) (updatedTime % 1000);
-		timeString= new String("" + mins + ":" + String.format("%02d", secs)
+		timeString = new String("" + mins + ":" + String.format("%02d", secs)
 				+ ":" + String.format("%03d", milliseconds));
 	}
 

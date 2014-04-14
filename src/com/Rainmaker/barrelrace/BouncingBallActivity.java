@@ -44,7 +44,7 @@ public class BouncingBallActivity extends Activity implements Callback,
 	private GameLoop gameLoop;
 	private Paint backgroundPaint;
 	private Paint borderPaint;
-	private Paint barrelPaint;
+
 	private Paint ballPaint;
 
 	private long lastSensorUpdate = -1;
@@ -59,7 +59,16 @@ public class BouncingBallActivity extends Activity implements Callback,
 	private Sensor mAccel;
 	private TextView timeTextView;
 	private Handler timeHandler = new Handler();
-	
+
+	// Static variable for checking if any variable is circled.
+	public boolean barrelColorLeft = false;
+	public boolean barrelColorRight = false;
+	public boolean barrelColorMiddle = false;
+
+	private Paint barrelPaintLeft;
+	private Paint barrelPaintRight;
+	private Paint barrelPaintMiddle;
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -73,7 +82,7 @@ public class BouncingBallActivity extends Activity implements Callback,
 		// setting vibrator
 		Vibrator vibrator = (Vibrator) getSystemService(Activity.VIBRATOR_SERVICE);
 		model.setVibrator(vibrator);
-		
+
 		// making court
 		surface = (SurfaceView) findViewById(R.id.bouncing_ball_surface);
 		DisplayMetrics dm = new DisplayMetrics();
@@ -106,9 +115,19 @@ public class BouncingBallActivity extends Activity implements Callback,
 		ballPaint.setColor(Color.BLUE);
 		ballPaint.setAntiAlias(true);
 
-		barrelPaint = new Paint();
-		barrelPaint.setColor(Color.RED);
-		barrelPaint.setAntiAlias(true);
+		// Add 3 diiferent paints for barrels.
+
+		barrelPaintLeft = new Paint();
+		barrelPaintLeft.setColor(Color.RED);
+		barrelPaintLeft.setAntiAlias(true);
+
+		barrelPaintRight = new Paint();
+		barrelPaintRight.setColor(Color.RED);
+		barrelPaintRight.setAntiAlias(true);
+
+		barrelPaintMiddle = new Paint();
+		barrelPaintMiddle.setColor(Color.RED);
+		barrelPaintMiddle.setAntiAlias(true);
 
 		borderPaint = new Paint();
 		borderPaint.setColor(Color.DKGRAY);
@@ -120,10 +139,11 @@ public class BouncingBallActivity extends Activity implements Callback,
 		timeTextView = (TextView) findViewById(R.id.time);
 		Typeface font = Typeface.createFromAsset(getAssets(), "LCD.ttf");
 		timeTextView.setTypeface(font);
-		//timer
+		// timer
 		timeHandler.postDelayed(updateTimerThread, 0);
-		
-		}
+
+	}
+
 	/**
 	 * Updates the time of the game
 	 */
@@ -138,6 +158,7 @@ public class BouncingBallActivity extends Activity implements Callback,
 			timeHandler.postDelayed(this, 0);
 		}
 	};
+
 	@Override
 	protected void onPause() {
 		super.onPause();
@@ -229,16 +250,31 @@ public class BouncingBallActivity extends Activity implements Callback,
 		barrelMiddleX = width / 2;
 		barrelMiddleY = height * 2 / 3;
 
-		c.drawCircle(barrelLeftX, barrelLeftY, BARREL_RADIUS, barrelPaint);// top
-																			// left
-																			// barrel
-		c.drawCircle(barrelRightX, barrelRightY, BARREL_RADIUS, barrelPaint);// top
-																				// right
-																				// barrel
-		c.drawCircle(barrelMiddleX, barrelMiddleY, BARREL_RADIUS, barrelPaint);// bottom
+		if (barrelColorLeft) {
+			barrelPaintLeft.setColor(Color.GREEN);
+		}
+		c.drawCircle(barrelLeftX, barrelLeftY, BARREL_RADIUS, barrelPaintLeft);// top
+																				// left
 																				// barrel
 
-		c.drawCircle(model.ballPixelX, model.ballPixelY, BALL_RADIUS, ballPaint);
+		if (barrelColorRight) {
+			barrelPaintRight.setColor(Color.GREEN);
+		}
+		c.drawCircle(barrelRightX, barrelRightY, BARREL_RADIUS,
+				barrelPaintRight);// top right barrel
+
+		if (barrelColorMiddle) {
+			barrelPaintMiddle.setColor(Color.GREEN);
+		}
+		c.drawCircle(barrelMiddleX, barrelMiddleY, BARREL_RADIUS,
+				barrelPaintMiddle);// bottom barrel
+
+		float ballX, ballY;
+		synchronized (model.LOCK) {
+			ballX = model.ballPixelX;
+			ballY = model.ballPixelY;
+		}
+		c.drawCircle(ballX, ballY, BALL_RADIUS, ballPaint);
 	}
 
 	public void surfaceDestroyed(SurfaceHolder holder) {
@@ -256,26 +292,45 @@ public class BouncingBallActivity extends Activity implements Callback,
 		public void run() {
 			while (running) {
 				try {
-					// don't like this hardcoding
-					TimeUnit.MILLISECONDS.sleep(5);
 
 					draw();
-
 					model.updatePhysics();
+					
+					int roundStateChanged[] = new int[3];
+					roundStateChanged = model.isCompletedCircle();
 
+					if (roundStateChanged[0] == 1) {
+						barrelColorLeft = true;
+						Log.d(POWER_SERVICE, "Touched");
+					}
+
+					if (roundStateChanged[1] == 1) {
+						barrelColorRight = true;
+						Log.d(POWER_SERVICE, "Touched");
+					}
+
+					if (roundStateChanged[2] == 1) {
+						barrelColorMiddle = true;
+						Log.d(POWER_SERVICE, "Touched");
+					}
 					// TODO Create a win condition and record time
 					if (model.isUserLost()) {
-
+						// stop the timer thread
+						timeHandler.removeCallbacks(updateTimerThread);
 						// create intent
 						Intent lostIntent = new Intent(
 								BouncingBallActivity.this, FinalActivity.class);
+						lostIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
 						lostIntent.putExtra("win", false);
 						lostIntent.putExtra("time", model.getTimeString());
 						startActivity(lostIntent);
-
 						// stop updatephysics thread
 						safeStop();
+						finish();
 					}
+
+					TimeUnit.MILLISECONDS.sleep(5);
+
 				} catch (InterruptedException ie) {
 					running = false;
 				}

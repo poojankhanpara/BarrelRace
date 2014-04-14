@@ -7,21 +7,28 @@
     android:orientation="vertical" >
 
     <Button
-        android:id="@+id/bouncing_ball_btn"
+        android:id="@+id/start_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="START" />
+        android:text="Start" 
+        android:textColor="#00CC00"
+        android:textSize="50sp"
+        />
 
     <Button
-        android:id="@+id/sensor_list_btn"
+        android:id="@+id/settings_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Settings" />
+        android:text="Settings"
+        android:textColor="#00CC00"
+        android:textSize="50sp" />
 
     <Button
-        android:id="@+id/accelerometer_btn"
+        android:id="@+id/exit_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="HIGHSCORE" />
+        android:text="Exit"
+        android:textColor="#00CC00"
+        android:textSize="50sp" />
 
 </LinearLayout>
