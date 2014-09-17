@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
@@ -13,10 +13,35 @@
         android:id="@+id/time"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_below="@+id/bouncing_ball_surface"
+        android:layout_gravity="center"
+        android:gravity="center"
         android:text="00:00:00"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:textSize="60sp"
-        android:textColor="#00CC00"
-        android:layout_gravity="center"
-        android:gravity="center" />
-</LinearLayout>
+        android:textColor="#000000"
+        android:textSize="60sp" />
+
+        
+        
+        
+
+        <ImageButton
+            android:id="@+id/play_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignParentLeft="true"
+            android:layout_below="@+id/bouncing_ball_surface"
+            android:layout_marginLeft="20dp"
+            android:background="@drawable/ic_play"
+            android:contentDescription="@null" />
+
+        <ImageButton
+            android:id="@+id/reset_button"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_alignTop="@+id/time"
+            android:layout_toRightOf="@+id/play_button"
+            android:background="@drawable/ic_reset"
+            android:contentDescription="@null" />
+
+</RelativeLayout>

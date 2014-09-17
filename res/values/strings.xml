@@ -4,5 +4,16 @@
     <string name="app_name">Barrel Race</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <string-array name="barrel_color_array">
+        <item>Red</item>
+        <item>Blue</item>
+        <item>Black</item>
+    </string-array>
+    <string-array name="bg_color_array">
+        <item>white</item>
+        <item>light gray</item>
+    </string-array>
 
 </resources>

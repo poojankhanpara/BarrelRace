@@ -6,29 +6,26 @@
     android:gravity="center"
     android:orientation="vertical" >
 
-    <Button
+    
+
+    <ImageButton
+        android:id="@+id/settings_button"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/ic_settings_button" />
+    
+    <ImageButton
         android:id="@+id/start_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start" 
-        android:textColor="#00CC00"
-        android:textSize="50sp"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+       	android:background="@drawable/ic_start_button"
+        
         />
 
-    <Button
-        android:id="@+id/settings_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Settings"
-        android:textColor="#00CC00"
-        android:textSize="50sp" />
-
-    <Button
-        android:id="@+id/exit_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Exit"
-        android:textColor="#00CC00"
-        android:textSize="50sp" />
+    <ImageButton
+        android:id="@+id/highscore"
+        android:layout_width="70dp"
+        android:layout_height="70dp"
+        android:background="@drawable/ic_highscore" />
 
 </LinearLayout>
